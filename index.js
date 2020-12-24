@@ -117,10 +117,21 @@ const commands = {
         }
     },
     "team": {
-        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <invite / kick> <user> <team>`'),
-        "usage": 'team <invite / kick> <user> <team>',
+        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <join / kick> <user> <team>`\nTeam: `[A, B, C]`'),
+        "usage": 'team <join / kick> <user> <team>',
         process: function (msg, command) {
+            console.log(command);
+            if (command.length == 4 || command.length == 2){
+                if (command[1].toLowerCase() === 'kick'){
+                    
+                }else if (command[1].toLowerCase() === 'join'){
 
+                }else {
+                    msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `'+command[1]+'`\nTry: `kick` or `join`'));
+                }
+            }else {
+                msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough Arguments Supplied'));
+            }
         }
     },
     "uptime":{
@@ -172,6 +183,7 @@ const commands = {
         }
     }
 }
+
 
 function loadConfig(configFile) {
     fs.readFile(configFile,'utf-8',(err,jsonString)=>{
