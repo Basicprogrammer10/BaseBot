@@ -1,6 +1,4 @@
-global.clientId;
-global.adminId;
-color = { "main": "#2fc290", "help": "#E8DD4D", "red":"#DB5953", "link":"#27E2E8"};
+color = { "main": "#2fc290", "help": "#E8DD4D", "red": "#DB5953", "link": "#27E2E8", "amber": "#c6650f" };
 commandPrefix = "$";
 version = "0.0.21";
 
@@ -18,23 +16,23 @@ const commands = {
         "usage": 'bugreport <text>',
         process: function (msg, command) {
             if (command.length > 1) {
-                var working = msg.content.split(commandPrefix+'bugreport ')[1];
+                var working = msg.content.split(commandPrefix + 'bugreport ')[1];
                 msg.channel.send(embedMessage(color.main, 'Bugreport :bug:', 'Bug has been Reported!\n`' + working + '`'));
-            }else {
+            } else {
                 msg.channel.send(embedMessage(color.red, 'Error', 'No text Supplied'));
             }
         }
     },
-    "calc":{
+    "calc": {
         "help": embedMessage(color.help, 'Help: Calc', 'Does Math\nUsage: `$calc <math>`'),
         "usage": 'calc <math>',
         process: function (msg, command) {
-            try{
+            try {
                 msg.channel.send(embedMessage(color.main, 'Math', 'Input: `' + command[1] + '`\nResult: `' + math.evaluate(command[1]) + '`'));
             }
-                catch (e) {
-                    msg.channel.send(embedMessage(color.red, 'Error', e));
-                }
+            catch (e) {
+                msg.channel.send(embedMessage(color.red, 'Error', e));
+            }
         }
     },
     "coinflip": {
@@ -43,7 +41,7 @@ const commands = {
         process: function (msg, command) {
             if (Math.random() <= 0.5) {
                 msg.channel.send(embedMessage(color.main, 'Coinflip', ':coin: Heads'));
-            }else {
+            } else {
                 msg.channel.send(embedMessage(color.main, 'Coinflip', ':coin: Tails'));
             }
         }
@@ -74,7 +72,7 @@ const commands = {
         "help": embedMessage(color.help, 'Help: Invite', 'Creates a invite for the server\nUsage: `$invite`'),
         "usage": 'invite',
         process: function (msg, command) {
-            msg.channel.createInvite({unique: false}).then(invite => {msg.channel.send(embedMessage(color.main, 'Invite', "https://discord.gg/" + invite.code))});
+            msg.channel.createInvite({ unique: false }).then(invite => { msg.channel.send(embedMessage(color.main, 'Invite', "https://discord.gg/" + invite.code)) });
         }
     },
     "ping": {
@@ -82,22 +80,22 @@ const commands = {
         "usage": 'ping',
         process: function (msg, command) {
             var ping = msg.createdTimestamp - Date.now();
-            msg.channel.send(embedMessage(color.main, 'Ping', 'Ping: ' + ping.toString() + 'ms\nAPI:  '+Math.round(client.ws.ping).toString()+'ms'))
+            msg.channel.send(embedMessage(color.main, 'Ping', 'Ping: ' + ping.toString() + 'ms\nAPI:  ' + Math.round(client.ws.ping).toString() + 'ms'))
         }
     },
     "random": {
         "help": embedMessage(color.help, 'Help: Random', 'Generates random Numbers\nUsage: `$random <min> <max>`'),
         "usage": 'random <min> <max>',
         process: function (msg, command) {
-            if (command.length === 3){
-                msg.channel.send(embedMessage(color.main, 'Random ' + min(command[1],command[2]) + ' — ' + 
-                max(command[1],command[2]), Math.floor(Math.random() * (max(command[1],command[2]) - min(command[1],command[2]) + 1) + min(command[1],command[2]))));
-        }else{
-            msg.channel.send(embedMessage(color.main, 'Random 1 — 6', Math.floor(Math.random() * (6 - 1 + 1) + 1)));
+            if (command.length === 3) {
+                msg.channel.send(embedMessage(color.main, 'Random ' + min(command[1], command[2]) + ' — ' +
+                    max(command[1], command[2]), Math.floor(Math.random() * (max(command[1], command[2]) - min(command[1], command[2]) + 1) + min(command[1], command[2]))));
+            } else {
+                msg.channel.send(embedMessage(color.main, 'Random 1 — 6', Math.floor(Math.random() * (6 - 1 + 1) + 1)));
+            }
         }
-    }
     },
-    "say":{
+    "say": {
         "help": embedMessage(color.help, 'Help: Say', 'Says Stuff\nUsage: `$say <text>`'),
         "usage": 'say <text>',
         process: function (msg, command) {
@@ -108,10 +106,10 @@ const commands = {
                 }
                 if (working.length > 1) {
                     msg.channel.send(working);
-                }else {
+                } else {
                     msg.channel.send(embedMessage(color.red, 'Error', 'I cant run my own commands :joy:'));
                 }
-            }else {
+            } else {
                 msg.channel.send(embedMessage(color.red, 'Error', 'No text Supplied'));
             }
         }
@@ -121,37 +119,55 @@ const commands = {
         "usage": 'team <join / kick> <user> <team>',
         process: function (msg, command) {
             console.log(command);
-            if (command.length == 4 || command.length == 2){
-                if (command[1].toLowerCase() === 'kick'){
-                    
-                }else if (command[1].toLowerCase() === 'join'){
-
-                }else {
-                    msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `'+command[1]+'`\nTry: `kick` or `join`'));
-                }
-            }else {
+            if (command.length == 4 || command.length != 4) {
+                if (command[1].toLowerCase() === 'kick') {
+                    const member = msg.mentions.members.first();
+                    try {
+                        if (command[3].toLowerCase() in config.groupRole) {
+                            let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
+                            member.roles.remove(Role);
+                            msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been removed from group `' + command[3] + '`'));
+                        } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`')); }
+                    } catch {
+                        msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
+                    }
+                } else if (command[1].toLowerCase() === 'join') {
+                    const member = msg.mentions.members.first();
+                    try {
+                        if (command[3].toLowerCase() in config.groupRole) {
+                            let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
+                            member.roles.add(Role);
+                            msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been added to group `' + command[3] + '`'));
+                        } else {
+                            msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`'));
+                        }
+                    } catch {
+                        msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
+                    }
+                } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `' + command[1] + '`\nTry: `kick` or `join`')); }
+            } else {
                 msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough Arguments Supplied'));
             }
         }
     },
-    "uptime":{
+    "uptime": {
         "help": embedMessage(color.help, 'Help: Uptime', 'Gives Bot Uptime\nUsage: `$uptime`'),
         "usage": 'uptime',
         process: function (msg, command) {
             msg.channel.send(embedMessage(color.main, 'Uptime', 'Uptime: ' + msToTime(client.uptime)));
         }
     },
-    "render":{
+    "render": {
         "help": embedMessage(color.help, 'Help: Render', 'Gives link to render of cords\nUsage: `$render <x> <z> [DimensionID]`\n0 - Overworld  |  1 - End'),
         "usage": 'render <x> <z> [DimensionID]',
         process: function (msg, command) {
-            if (command.length === 3){
-                msg.channel.send(embedMessage(color.link, 'Render x'+command[1]+' z'+command[2] + '[overworld-isometric]', 'https://elite-anarchy.connorcode.com/#overworld-isometric/0/4/'+command[1]+'/'+command[2]+'/64'))
-            }else if (command.length === 4){
-                dimID = {0:'overworld-isometric',1:'end-isometric'};
-                msg.channel.send(embedMessage(color.link, 'Render x'+command[1]+' z'+command[2] + ' ['+dimID[Number(command[3])]+']', 'https://elite-anarchy.connorcode.com/#'+dimID[Number(command[3])]+'/0/6/'+command[1]+'/'+command[2]+'/64'))
+            if (command.length === 3) {
+                msg.channel.send(embedMessage(color.link, 'Render x' + command[1] + ' z' + command[2] + '[overworld-isometric]', 'https://elite-anarchy.connorcode.com/#overworld-isometric/0/4/' + command[1] + '/' + command[2] + '/64'))
+            } else if (command.length === 4) {
+                dimID = { 0: 'overworld-isometric', 1: 'end-isometric' };
+                msg.channel.send(embedMessage(color.link, 'Render x' + command[1] + ' z' + command[2] + ' [' + dimID[Number(command[3])] + ']', 'https://elite-anarchy.connorcode.com/#' + dimID[Number(command[3])] + '/0/6/' + command[1] + '/' + command[2] + '/64'))
             }
-            else{
+            else {
                 msg.channel.send(embedMessage(color.link, 'Render x0 z0', 'https://elite-anarchy.connorcode.com/#overworld-isometric/0/4/0/0/64'))
             }
         }
@@ -166,18 +182,18 @@ const commands = {
     "eval": {
         "help": embedMessage(color.help, 'Help: Eval', 'Hidden Command for Kool Peeps only (AKA not you)'),
         process: function (msg, command) {
-            if (msg.author.id == adminId) {
+            if (msg.author.id == config.adminId) {
                 var working = '';
-                for (i in command){
+                for (i in command) {
                     working = working + command[i] + ' '
                 }
                 working = working.split('eval ')[1].slice(0, -1);
                 try {
-                    msg.channel.send(embedMessage(color.main, "Eval", 'Code: `' + working + '`\n'+eval(working)));
-                }catch (e){
+                    msg.channel.send(embedMessage(color.main, "Eval", 'Code: `' + working + '`\n' + eval(working)));
+                } catch (e) {
                     msg.channel.send(embedMessage(color.red, 'Code: `' + working + '`\nError', e));
                 }
-            }else{
+            } else {
                 msg.channel.send(embedMessage(color.red, 'Who do you think you are?!', 'No backdooring for you!'));
             }
         }
@@ -186,26 +202,27 @@ const commands = {
 
 
 function loadConfig(configFile) {
-    fs.readFile(configFile,'utf-8',(err,jsonString)=>{
-        const data = JSON.parse(jsonString);
-        global.clientId = data.clientId;
-        global.adminId = data.adminId;
-        client.login(clientId);
-         });
+    fs.readFile(configFile, 'utf-8', (err, jsonString) => {
+        global.config = JSON.parse(jsonString);
+        //for (const key in data) {
+        //    try{ eval('global.' + key + '="' + data[key] + '"'); }catch(e){}
+        //}
+        client.login(config.clientId);
+    });
 }
 
 function embedMessage(embedColor, title, text) { return new Discord.MessageEmbed().setColor(embedColor).setTitle(title).setDescription(text) }
 
 function msToTime(duration) {
     var milliseconds = parseInt((duration % 1000) / 100),
-      seconds = Math.floor((duration / 1000) % 60),
-      minutes = Math.floor((duration / (1000 * 60)) % 60),
-      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-  
+        seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
     hours = (hours < 10) ? "0" + hours : hours;
     minutes = (minutes < 10) ? "0" + minutes : minutes;
     seconds = (seconds < 10) ? "0" + seconds : seconds;
-  
+
     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
 
@@ -219,12 +236,12 @@ client.on("message", async (msg) => {
         console.log('\033[32m' + msg.author['username'] + '#' + msg.author['discriminator'] + ': ' + msg.content + '\033[0m')
         var command = msg.content.split(commandPrefix)[1].split(' ')
         if (Object.keys(commands).includes(command[0].toLowerCase())) {
-            try{
+            try {
                 commands[command[0].toLowerCase()].process(msg, command);
-            }catch (e){
-                msg.channel.send(embedMessage(color.red, 'Error', 'Please report this Bug to **Sigma#8214**\n`'+e+'`'));
+            } catch (e) {
+                msg.channel.send(embedMessage(color.red, 'Error', 'Please report this Bug to **Sigma#8214**\n`' + e + '`'));
             }
-        }else{
+        } else {
             msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Command\nTry `$help`'));
         }
     }
