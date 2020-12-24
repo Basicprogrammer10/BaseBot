@@ -115,38 +115,41 @@ const commands = {
         }
     },
     "team": {
-        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <join / kick> <user> <team>`\nTeam: `[A, B, C]`\nExample: `$team join @Sigma A`'),
+        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <join / kick> <user> <team>`\nExample: `$team join @Sigma A`\n**Only For Admins**'),
         "usage": 'team <join / kick> <user> <team>',
         process: function (msg, command) {
-            console.log(command);
-            if (command.length == 4 || command.length != 4) {
-                if (command[1].toLowerCase() === 'kick') {
-                    const member = msg.mentions.members.first();
-                    try {
-                        if (command[3].toLowerCase() in config.groupRole) {
-                            let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
-                            member.roles.remove(Role);
-                            msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been removed from group `' + command[3] + '`'));
-                        } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`')); }
-                    } catch {
-                        msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
-                    }
-                } else if (command[1].toLowerCase() === 'join') {
-                    const member = msg.mentions.members.first();
-                    try {
-                        if (command[3].toLowerCase() in config.groupRole) {
-                            let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
-                            member.roles.add(Role);
-                            msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been added to group `' + command[3] + '`'));
-                        } else {
-                            msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`'));
+            if (msg.member.permissions.has('MANAGE_MESSAGES')) {
+                if (command.length == 4) {
+                    if (command[1].toLowerCase() === 'kick') {
+                        const member = msg.mentions.members.first();
+                        try {
+                            if (command[3].toLowerCase() in config.groupRole) {
+                                let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
+                                member.roles.remove(Role);
+                                msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been removed from group `' + command[3] + '`'));
+                            } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`')); }
+                        } catch {
+                            msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
                         }
-                    } catch {
-                        msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
-                    }
-                } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `' + command[1] + '`\nTry: `kick` or `join`')); }
+                    } else if (command[1].toLowerCase() === 'join') {
+                        const member = msg.mentions.members.first();
+                        try {
+                            if (command[3].toLowerCase() in config.groupRole) {
+                                let Role = msg.guild.roles.cache.find(role => role.id == config.groupRole[command[3].toLowerCase()]);
+                                member.roles.add(Role);
+                                msg.channel.send(embedMessage(color.amber, 'Team', '`' + member.user.username + '#' + member.user.discriminator + '` Has been added to group `' + command[3] + '`'));
+                            } else {
+                                msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Group: `' + command[3] + '`'));
+                            }
+                        } catch {
+                            msg.channel.send(embedMessage(color.red, 'Error', 'Unknown User: `' + command[2] + '`'));
+                        }
+                    } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `' + command[1] + '`\nTry: `kick` or `join`')); }
+                } else {
+                    msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough or Too Many Arguments Supplied'));
+                }
             } else {
-                msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough or Too Many Arguments Supplied'));
+                msg.channel.send(embedMessage(color.red, 'Who do you think you are?!', 'No backdooring for you!'));
             }
         }
     },
