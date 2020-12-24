@@ -115,7 +115,7 @@ const commands = {
         }
     },
     "team": {
-        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <join / kick> <user> <team>`\nTeam: `[A, B, C]`'),
+        "help": embedMessage(color.help, 'Help: Team', 'Invite / Kick user from team\nUsage: `$team <join / kick> <user> <team>`\nTeam: `[A, B, C]`\nExample: `$team join @Sigma A`'),
         "usage": 'team <join / kick> <user> <team>',
         process: function (msg, command) {
             console.log(command);
@@ -146,7 +146,7 @@ const commands = {
                     }
                 } else { msg.channel.send(embedMessage(color.red, 'Error', 'Unknown Subcommand: `' + command[1] + '`\nTry: `kick` or `join`')); }
             } else {
-                msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough Arguments Supplied'));
+                msg.channel.send(embedMessage(color.red, 'Error', 'Not Enough or Too Many Arguments Supplied'));
             }
         }
     },
