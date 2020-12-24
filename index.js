@@ -207,9 +207,6 @@ const commands = {
 function loadConfig(configFile) {
     fs.readFile(configFile, 'utf-8', (err, jsonString) => {
         global.config = JSON.parse(jsonString);
-        //for (const key in data) {
-        //    try{ eval('global.' + key + '="' + data[key] + '"'); }catch(e){}
-        //}
         client.login(config.clientId);
     });
 }
