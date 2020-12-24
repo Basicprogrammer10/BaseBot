@@ -1,9 +1,5 @@
 color = { "main": "#2fc290", "help": "#E8DD4D", "red": "#DB5953", "link": "#27E2E8", "amber": "#c6650f" };
-commandPrefix = "$";
 version = "0.0.21";
-
-//TODO: teamCommand
-//https://discord.com/oauth2/authorize?&client_id=791507078686048286&scope=bot&permissions=8
 
 const Discord = require("discord.js");
 const math = require('mathjs');
@@ -16,7 +12,7 @@ const commands = {
         "usage": 'bugreport <text>',
         process: function (msg, command) {
             if (command.length > 1) {
-                var working = msg.content.split(commandPrefix + 'bugreport ')[1];
+                var working = msg.content.split(config.commandPrefix + 'bugreport ')[1];
                 msg.channel.send(embedMessage(color.main, 'Bugreport :bug:', 'Bug has been Reported!\n`' + working + '`'));
             } else {
                 msg.channel.send(embedMessage(color.red, 'Error', 'No text Supplied'));
@@ -59,7 +55,7 @@ const commands = {
                 numCommands = 0;
                 for (i in Object.keys(commands)) {
                     if (commands[Object.keys(commands)[i]]['usage'] != undefined) {
-                        working += commandPrefix + commands[Object.keys(commands)[i]]['usage'] + '\n'
+                        working += config.commandPrefix + commands[Object.keys(commands)[i]]['usage'] + '\n'
                         numCommands += 1;
                     }
                 }
@@ -216,9 +212,9 @@ client.on('ready', () => {
 });
 
 client.on("message", async (msg) => {
-    if (msg.content.charAt(0).toLowerCase() == commandPrefix) {
+    if (msg.content.charAt(0).toLowerCase() == config.commandPrefix) {
         console.log('\033[32m' + msg.author['username'] + '#' + msg.author['discriminator'] + ': ' + msg.content + '\033[0m')
-        var command = msg.content.split(commandPrefix)[1].split(' ')
+        var command = msg.content.split(config.commandPrefix)[1].split(' ')
         if (Object.keys(commands).includes(command[0].toLowerCase())) {
             try {
                 commands[command[0].toLowerCase()].process(msg, command);
