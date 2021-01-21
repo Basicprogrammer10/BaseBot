@@ -1,3 +1,3 @@
 # BaseBot
 
-idk
+idk -- A disocrd bot i made...
